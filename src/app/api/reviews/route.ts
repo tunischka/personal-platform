@@ -2,7 +2,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { ReviewCard } from "@/types/review";
 
-export const revalidate = 60 * 60 * 24; // 24 saat
 
 function coerceArray<T = any>(val: any): T[] {
   if (!val) return [];

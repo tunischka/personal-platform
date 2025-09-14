@@ -3,8 +3,6 @@
 import type { ReviewCard as ReviewCardT } from "@/types/review";
 import ReviewCard from "./ReviewCard";
 import { useEffect, useMemo, useState } from "react";
-import ReviewCardSkeleton from "./ReviewCardSkeleton";
-
 
 type Props = {
   initial: {
@@ -20,43 +18,28 @@ export default function ReviewsGrid({ initial }: Props) {
   );
   const [q, setQ] = useState("");
   const [minRating, setMinRating] = useState<number>(0);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-
-  // Basit filtreleme
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase();
     return reviews.filter((r) => {
       const okRating = (r.rating || 0) >= (minRating || 0);
       if (!needle) return okRating;
-      const hay =
-        `${r.place.title ?? ""} ${r.text ?? ""} ${r.place.address ?? ""}`.toLowerCase();
+      const hay = `${r.place.title ?? ""} ${r.text ?? ""} ${r.place.address ?? ""}`.toLowerCase();
       return okRating && hay.includes(needle);
     });
   }, [reviews, q, minRating]);
 
-  // “Daha fazla yükle”
   async function loadMore() {
-  if (!nextToken) return;
-  try {
-    setLoading(true);
-    setError(null);
-    const res = await fetch(`/api/reviews?page_token=${encodeURIComponent(nextToken)}`, { cache: "no-store" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (!nextToken) return;
+    const res = await fetch(`/api/reviews?page_token=${encodeURIComponent(nextToken)}`, {
+      cache: "no-store",
+    });
+    if (!res.ok) return;
     const data = await res.json();
     setReviews((cur) => [...cur, ...(data.reviews || [])]);
     setNextToken(data.next_page_token || null);
-  } catch (e: any) {
-    setError("Yeni kayıtlar alınamadı, lütfen tekrar dene.");
-  } finally {
-    setLoading(false);
-  }
-}
-
   }
 
-  // İlk mount’ta boşsa (edge-case) bir kez çek
   useEffect(() => {
     if (!reviews.length) {
       fetch("/api/reviews", { cache: "no-store" })
