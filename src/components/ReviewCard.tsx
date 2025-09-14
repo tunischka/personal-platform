@@ -1,7 +1,7 @@
 "use client";
 
 import { Star } from "lucide-react";
-import type { ReviewCard as ReviewCardT } from "@/types/review";
+import type { ReviewCard as ReviewCardT } from "@/types/reviews";
 import { useMemo } from "react";
 
 type Props = { review: ReviewCardT };

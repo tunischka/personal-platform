@@ -1,6 +1,6 @@
 // src/app/(site)/reviews/page.tsx
 //import ReviewsGrid from "@/components/ReviewsGrid";
-import type { ReviewCard } from "@/types/review.tsx";
+import type { ReviewCard } from "@/types/reviews";
 
 async function getInitial() {
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL ?? ""}/api/reviews`, {

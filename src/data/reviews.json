@@ -1,0 +1,16 @@
+[
+  {
+    "id": "1",
+    "place": "Karaköy Lokantası",
+    "rating": 5,
+    "text": "Harika mezeler ve ambiyans!",
+    "url": "https://maps.google.com/?cid=123456"
+  },
+  {
+    "id": "2",
+    "place": "Nusr-Et Steakhouse",
+    "rating": 4,
+    "text": "Et güzel ama pahalı.",
+    "url": "https://maps.google.com/?cid=789101"
+  }
+]
