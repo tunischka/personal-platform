@@ -2,8 +2,6 @@
 //import ReviewsGrid from "@/components/ReviewsGrid";
 import type { ReviewCard } from "@/types/review.tsx";
 
-export const revalidate = 3600; // SSR tarafında 1 saat
-
 async function getInitial() {
   const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL ?? ""}/api/reviews`, {
     // local dev’de boş BASE_URL ise relative fetch yapmak daha güvenli
