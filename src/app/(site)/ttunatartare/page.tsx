@@ -1,5 +1,5 @@
 // src/app/(site)/reviews/page.tsx
-import ReviewsGrid from "@/components/ReviewsGrid";
+//import ReviewsGrid from "@/components/ReviewsGrid";
 import type { ReviewCard } from "@/types/review.tsx";
 
 export const revalidate = 3600; // SSR tarafında 1 saat
@@ -31,7 +31,10 @@ export default async function ReviewsPage() {
       <p className="mb-6 text-sm text-zinc-400">
         Google Maps’te paylaştığım restoran/yer yorumları. Filtrele, ara ve Google Maps’te aç.
       </p>
-      <ReviewsGrid initial={initial} />
+      <section className="p-8 text-center text-zinc-400">
+  Reviews sayfası geçici olarak devre dışı.
+</section>
+
     </main>
   );
 }
