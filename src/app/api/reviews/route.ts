@@ -70,7 +70,7 @@ export async function GET(req: NextRequest) {
   const res = await fetch(serpUrl, {
     // refresh=1 gelirse cache’i bypass et
     cache: refresh ? "no-store" : "force-cache",
-    next: { revalidate },
+    
   });
 
   if (!res.ok) {
@@ -98,7 +98,7 @@ export async function GET(req: NextRequest) {
     {
       headers: {
         // edge/CDN tarafında da 24h cache
-        "Cache-Control": "s-maxage=86400, stale-while-revalidate=600",
+        "Cache-Control": "s-maxage=86400",
       },
     }
   );
