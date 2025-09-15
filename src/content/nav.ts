@@ -1,6 +1,20 @@
-export const navItems = [
+// src/content/nav.ts
+export type NavItem = {
+  label: string;
+  href?: string;
+  children?: { label: string; href: string }[];
+};
+
+export const navItems: NavItem[] = [
   { label: "Home", href: "/" },
   { label: "Projects", href: "/projects" },
-  { label: "CV", href: "/cv" },       // ✅ sadece /cv
-  { label: "ttunatartare", href: "/ttunatartare" }, // ✅ sadece /about
+  {
+    label: "Tuna Tartar",
+    href: "/ttunatartare",
+    children: [
+      { label: "Reviews", href: "/ttunatartare/reviews" },
+      // { label: "Blog", href: "/ttunatartare/blog" }, // sonra açarız
+    ],
+  },
+  { label: "CV", href: "/(site)/cv" },
 ];

@@ -4,17 +4,11 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { useScrollProgress } from "@/hooks/useScrollProgress";
-import { navItems } from "@/content/nav"; // nav.ts yoksa, aşağıdaki inline listeyi açabilirsin
-// const navItems = [
-//   { label: "Home", href: "/" },
-//   { label: "Projects", href: "/projects" },
-//   { label: "CV", href: "/(site)/cv" },
-//   { label: "About", href: "/(site)/about" },
-// ];
+import { navItems } from "@/content/nav";
 
 export default function GlassNav() {
-  const p = useScrollProgress(140);        // 0–1 arası
-  const height = 80 - (80 - 58) * p;       // 80px → 58px
+  const p = useScrollProgress(140); // 0–1 arası
+  const height = 80 - (80 - 58) * p; // 80px → 58px
   const shadowAlpha = 0.12 - (0.12 - 0.08) * p;
 
   // Nav yüksekliğini CSS değişkenine yaz (layout'ta main'e padding vermek için)
@@ -42,19 +36,40 @@ export default function GlassNav() {
         {/* Links */}
         <ul className="hidden md:flex items-center gap-1 sm:gap-2">
           {navItems.map((it) => (
-            <li key={it.href}>
+            <li key={it.label} className="relative group">
+              {/* Ana link */}
               <Link
-                href={it.href}
+                href={it.href ?? "#"}
                 className="
                   px-3 py-2 rounded-xl text-sm nav-uses-acc nav-hover
                   hover:bg-black/5 dark:hover:bg-white/5
                   focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2
                   focus-visible:ring-black/30 dark:focus-visible:ring-white/30
                 "
-                style={{ borderColor: "var(--acc)" }}
               >
                 {it.label}
               </Link>
+
+              {/* Eğer children varsa dropdown */}
+              {it.children?.length ? (
+                <ul
+                  className="
+                    absolute left-0 mt-1 hidden min-w-[160px] rounded-xl border border-zinc-200 dark:border-zinc-700
+                    bg-white dark:bg-zinc-900 shadow-lg group-hover:block
+                  "
+                >
+                  {it.children.map((c) => (
+                    <li key={c.href}>
+                      <Link
+                        href={c.href}
+                        className="block px-3 py-2 text-sm hover:bg-black/5 dark:hover:bg-white/5 rounded-lg"
+                      >
+                        {c.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
             </li>
           ))}
         </ul>

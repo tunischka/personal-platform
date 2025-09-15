@@ -1,9 +1,25 @@
+// scripts/update-reviews.ts
 import { readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fetch } from "undici";
+import { put } from "@vercel/blob";
+import dotenv from "dotenv";
+dotenv.config({ path: ".env.local" });
+
+
+console.log(
+  "[env-check]",
+  (process.env.SERPAPI_API_KEY || "").slice(0, 6),
+  (process.env.GOOGLE_CONTRIBUTOR_ID || "").slice(0, 6)
+);
+
+
 
 const SERPAPI_API_KEY = process.env.SERPAPI_API_KEY!;
 const GOOGLE_CONTRIBUTOR_ID = process.env.GOOGLE_CONTRIBUTOR_ID!;
+const BLOB_RW_TOKEN = process.env.BLOB_READ_WRITE_TOKEN; // Vercel -> Settings -> Tokens
+const BLOB_PATH = process.env.REVIEWS_BLOB_PATH || "data/reviews.json"; 
+// örn: "ttunatartare/reviews.json"
 
 type Review = {
   id: string;
@@ -66,14 +82,33 @@ async function main() {
   const file = resolve(process.cwd(), "src/data/reviews.json");
   let local: Review[] = [];
   try { local = JSON.parse(await readFile(file, "utf8")); } catch {}
+
   const remote = await fetchAll();
 
+  // id’ye göre merge
   const map = new Map<string, Review>();
   [...local, ...remote].forEach(r => map.set(r.id, r));
   const merged = Array.from(map.values());
 
+  // 1) Lokale yaz (geliştirme kolaylığı)
   await writeFile(file, JSON.stringify(merged, null, 2), "utf8");
   console.log(`✅ reviews.json güncellendi (toplam ${merged.length})`);
+
+  // 2) Blob’a yükle (public)
+  if (!BLOB_RW_TOKEN) {
+    console.warn("⚠️ BLOB_READ_WRITE_TOKEN tanımlı değil; Blob upload atlanıyor.");
+    return;
+  }
+
+  const { url } = await put(BLOB_PATH, JSON.stringify({ reviews: merged, next_page_token: null }), {
+    access: "public",
+    contentType: "application/json",
+    token: BLOB_RW_TOKEN,
+    addRandomSuffix: false // path sabit kalsın
+  });
+
+  console.log("✅ Blob yüklendi:", url);
+  console.log("ℹ️  REVIEWS_JSON_URL olarak bu public URL’i kullanın.");
 }
 
 main().catch(e => { console.error("❌ Hata:", e); process.exit(1); });
