@@ -1,22 +1,9 @@
-// src/app/(site)/reviews/page.tsx
-//import ReviewsGrid from "@/components/ReviewsGrid";
+// app/(site)/reviews/page.tsx
 import type { ReviewCard } from "@/types/reviews";
 
 async function getInitial() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL ?? ""}/api/reviews`, {
-    // local dev’de boş BASE_URL ise relative fetch yapmak daha güvenli
-    // ama App Router server component’ta absolute isterse aşağı fallback var:
-    cache: "no-store",
-  }).catch(() => null);
-
-  if (!res || !("ok" in res) || !res.ok) {
-    // fallback: runtime’da relative çağrı
-    const r2 = await fetch("/api/reviews", { cache: "no-store" }).catch(() => null as any);
-    if (!r2 || !r2.ok) {
-      return { reviews: [] as ReviewCard[], next_page_token: null as string | null };
-    }
-    return r2.json();
-  }
+  const res = await fetch("/api/reviews", { cache: "no-store" }).catch(() => null as any);
+  if (!res || !res.ok) return { reviews: [] as ReviewCard[], next_page_token: null as string | null };
   return res.json();
 }
 
@@ -29,10 +16,13 @@ export default async function ReviewsPage() {
       <p className="mb-6 text-sm text-zinc-400">
         Google Maps’te paylaştığım restoran/yer yorumları. Filtrele, ara ve Google Maps’te aç.
       </p>
-      <section className="p-8 text-center text-zinc-400">
-  Reviews sayfası geçici olarak devre dışı.
-</section>
 
+      {!initial?.reviews?.length ? (
+        <section className="p-8 text-center text-zinc-400">Reviews sayfası geçici olarak devre dışı.</section>
+      ) : (
+        // burada gridini render edersin
+        <div>{/* <ReviewsGrid items={initial.reviews}/> */}</div>
+      )}
     </main>
   );
 }
