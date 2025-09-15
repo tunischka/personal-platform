@@ -1,11 +1,17 @@
 // app/(site)/ttunatartare/reviews/page.tsx
 import ReviewCard from "@/components/ReviewCard";
+import { headers } from "next/headers";
 
 async function getData() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL ?? ""}/api/reviews`, {
-    cache: "no-store",
-  }).catch(() => null as any);
+  // prod'da kesin host üzerinden git
+  const hdrs = await headers();
+  const host = hdrs.get("x-forwarded-host") || hdrs.get("host");
+  const proto = hdrs.get("x-forwarded-proto") || "https";
+  const base =
+    process.env.NEXT_PUBLIC_BASE_URL || (host ? `${proto}://${host}` : "");
+  const url = `${base}/api/reviews`;
 
+  const res = await fetch(url, { cache: "no-store" }).catch(() => null as any);
   if (!res || !res.ok) return { reviews: [] as any[] };
   return res.json();
 }
@@ -21,11 +27,16 @@ export default async function ReviewsPage() {
         Google Maps katkıcı hesabımdan çekilen yorumlar.
       </p>
 
+      {/* Debug için */}
+      <p className="mb-4 text-xs text-zinc-500">Toplam: {reviews.length}</p>
+
       {reviews.length === 0 ? (
         <p className="text-sm text-zinc-400">Henüz veri yok.</p>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {reviews.map((r: any) => <ReviewCard key={r.id} review={r} />)}
+          {reviews.map((r: any) => (
+            <ReviewCard key={r.id} review={r} />
+          ))}
         </div>
       )}
     </main>

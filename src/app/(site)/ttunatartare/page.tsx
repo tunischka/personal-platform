@@ -1,44 +1,22 @@
-// app/(site)/ttunatartare/reviews/page.tsx
-import ReviewCard from "@/components/ReviewCard";
-import { headers } from "next/headers";
+// app/(site)/ttunatartare/page.tsx
+import Link from "next/link";
 
-async function getData() {
-  // prod'da kesin host üzerinden git
-  const hdrs = await headers();
-  const host = hdrs.get("x-forwarded-host") || hdrs.get("host");
-  const proto = hdrs.get("x-forwarded-proto") || "https";
-  const base =
-    process.env.NEXT_PUBLIC_BASE_URL || (host ? `${proto}://${host}` : "");
-  const url = `${base}/api/reviews`;
-
-  const res = await fetch(url, { cache: "no-store" }).catch(() => null as any);
-  if (!res || !res.ok) return { reviews: [] as any[] };
-  return res.json();
-}
-
-export default async function ReviewsPage() {
-  const data = await getData();
-  const reviews = Array.isArray(data?.reviews) ? data.reviews : [];
-
+export default function TunaTartarLanding() {
   return (
-    <main className="mx-auto max-w-6xl px-4 py-8">
-      <h1 className="mb-2 text-2xl font-bold">Yorumlarım</h1>
-      <p className="mb-6 text-sm text-zinc-400">
-        Google Maps katkıcı hesabımdan çekilen yorumlar.
-      </p>
+    <main className="mx-auto max-w-6xl px-4 py-14">
+      <h1 className="mb-3 text-3xl font-bold">Tuna Tartar</h1>
+      <p className="mb-8 text-zinc-500">Ekosistem ana sayfası. Aşağıdan bölümlere geçebilirsin.</p>
 
-      {/* Debug için */}
-      <p className="mb-4 text-xs text-zinc-500">Toplam: {reviews.length}</p>
-
-      {reviews.length === 0 ? (
-        <p className="text-sm text-zinc-400">Henüz veri yok.</p>
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {reviews.map((r: any) => (
-            <ReviewCard key={r.id} review={r} />
-          ))}
-        </div>
-      )}
+      <div className="flex gap-3">
+        <Link
+          href="/ttunatartare/reviews"
+          className="rounded-xl border px-4 py-2 text-sm hover:bg-black/5 dark:hover:bg-white/10"
+        >
+          Reviews
+        </Link>
+        {/* İleride blog açınca */}
+        {/* <Link href="/ttunatartare/blog" className="rounded-xl border px-4 py-2 text-sm hover:bg-black/5 dark:hover:bg-white/10">Blog</Link> */}
+      </div>
     </main>
   );
 }
