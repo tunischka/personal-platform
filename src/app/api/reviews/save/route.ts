@@ -7,7 +7,8 @@ export async function POST(req: Request) {
     const payload = await req.json(); // { reviews: [...], next_page_token: ... }
     const body = JSON.stringify(payload ?? { reviews: [], next_page_token: null });
 
-    const key = process.env.REVIEWS_BLOB_KEY || "reviews/latest.json";
+    const key = process.env.REVIEWS_BLOB_KEY || "reviews.json";
+
     const token = process.env.BLOB_READ_WRITE_TOKEN; // server only
     if (!token) return NextResponse.json({ ok: false, error: "MISSING_TOKEN" }, { status: 500 });
 
