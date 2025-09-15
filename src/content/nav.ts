@@ -16,5 +16,5 @@ export const navItems: NavItem[] = [
       // { label: "Blog", href: "/ttunatartare/blog" }, // sonra açarız
     ],
   },
-  { label: "CV", href: "/(site)/cv" },
+  { label: "CV", href: "/cv" },
 ];
