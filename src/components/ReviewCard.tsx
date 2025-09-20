@@ -98,23 +98,26 @@ export default function ReviewCard(props: Props) {
         props.className
       )}
     >
-      {/* Media (16:9) */}
-      <div className="relative aspect-[16/9] w-full bg-zinc-100">
-        {photoUrl ? (
-          <Image
-            src={photoUrl}
-            alt={placeName}
-            fill
-            className="object-cover"
-            sizes="(min-width:1280px) 33vw, (min-width:640px) 50vw, 100vw"
-            priority={false}
-          />
-        ) : (
-          <div className="absolute inset-0 grid place-items-center text-zinc-400">
-            <span className="text-sm">Fotoğraf yok</span>
-          </div>
-        )}
+      {/* Media (4:3) */}
+     
+      <div className="p-3">
+        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-zinc-100">
+          {photoUrl ? (
+            <Image
+              src={photoUrl}
+              alt={placeName}
+              fill
+              className="object-cover"
+              sizes="(min-width:1280px) 33vw, (min-width:640px) 50vw, 100vw"
+            />
+          ) : (
+            <div className="absolute inset-0 grid place-items-center text-zinc-400">
+              <span className="text-sm">Fotoğraf yok</span>
+            </div>
+          )}
+        </div>
       </div>
+
 
       <CardContent className="flex h-full flex-col gap-3 p-4">
         {/* Title + rating */}
