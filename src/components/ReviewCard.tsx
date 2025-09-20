@@ -1,76 +1,206 @@
-// src/components/ReviewCard.tsx
 "use client";
 
-import { Star } from "lucide-react";
-import type { ReviewCard as ReviewCardT } from "@/types/reviews";
+import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
-import { useMemo } from "react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
-type Props = { review: ReviewCardT };
+/** Esnek tip: API/snake_case/camelCase farkını tolere eder */
+type ReviewAny = Partial<{
+  place_id: string;
 
-export default function ReviewCard({ review }: Props) {
-  const { place, rating, text, date, images, id } = review;
+  // isim
+  name: string;
+  title: string;
+  place_name: string;
 
-  const stars = useMemo(() => {
-    const full = Math.round(Number(rating) || 0);
-    return Array.from({ length: 5 }).map((_, i) => (
-      <Star
-        key={i}
-        className="h-4 w-4"
-        aria-hidden
-        strokeWidth={1.5}
-        fill={i < full ? "currentColor" : "none"}
-      />
-    ));
-  }, [rating]);
+  // bölge
+  district: string;
+  neighborhood: string;
+  area: string;
+
+  // puan
+  rating: number;
+  score: number;
+
+  // görsel
+  photo_url: string;
+  photoUrl: string;
+  photo: string;
+  image_url: string;
+
+  // adres
+  address: string;
+  formatted_address: string;
+  vicinity: string;
+
+  // metin
+  text: string;
+  review: string;
+  content: string;
+
+  // link
+  maps_url: string;
+  mapsUrl: string;
+  url: string;
+  link: string;
+}>;
+
+type Props = {
+  /** Eski kullanım: doğrudan review objesi */
+  review?: ReviewAny;
+
+  /** Alternatif kullanım: alan alan */
+  placeName?: string;
+  district?: string;
+  rating?: number; // 0–5
+  photoUrl?: string | null;
+  address?: string;
+  reviewText?: string;
+  mapsUrl?: string;
+
+  className?: string;
+};
+
+export default function ReviewCard(props: Props) {
+  const r = props.review;
+
+  const pick = <T,>(...vals: (T | null | undefined | "")[]) =>
+    vals.find((v) => v !== undefined && v !== null && v !== "") as T | undefined;
+
+  const placeName = pick(
+    r?.name,
+    r?.title,
+    r?.place_name,
+    props.placeName
+  ) ?? "";
+
+  const district = pick(
+    r?.district,
+    r?.neighborhood,
+    r?.area,
+    props.district
+  ) ?? "";
+
+  const rating = Number(pick(r?.rating, r?.score, props.rating) ?? 0);
+
+  const photoUrl =
+    pick(r?.photo_url, r?.photoUrl, r?.photo, r?.image_url, props.photoUrl) ??
+    null;
+
+  const address =
+    pick(r?.address, r?.formatted_address, r?.vicinity, props.address) ?? "";
+
+  const reviewTxt =
+    pick(r?.text, r?.review, r?.content, props.reviewText) ?? "";
+
+  const mapsUrl =
+    pick(r?.maps_url, r?.mapsUrl, r?.url, r?.link, props.mapsUrl) ?? "#";
 
   return (
-    <Card key={id} className="overflow-hidden rounded-2xl border-zinc-800/50 bg-zinc-900/40">
-      {/* Kapak */}
-      {images?.length ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={images[0]}
-          alt={place.title ?? "Place image"}
-          className="aspect-[3/2] w-full object-cover"
-        />
-      ) : null}
+    <Card
+      className={cn(
+        "h-full overflow-hidden rounded-2xl border border-zinc-200/60 bg-white shadow-sm transition-all hover:-translate-y-[2px] hover:shadow-md",
+        props.className
+      )}
+    >
+      {/* Media (16:9) */}
+      <div className="relative aspect-[16/9] w-full bg-zinc-100">
+        {photoUrl ? (
+          <Image
+            src={photoUrl}
+            alt={placeName}
+            fill
+            className="object-cover"
+            sizes="(min-width:1280px) 33vw, (min-width:640px) 50vw, 100vw"
+            priority={false}
+          />
+        ) : (
+          <div className="absolute inset-0 grid place-items-center text-zinc-400">
+            <span className="text-sm">Fotoğraf yok</span>
+          </div>
+        )}
+      </div>
 
-      <CardContent className="p-4">
-        {/* Başlık + Puan */}
-        <header className="mb-2 flex items-start justify-between gap-3">
-          <h3 className="text-base font-semibold leading-snug">
-            {place.title ?? "Bilinmeyen Mekan"}
-          </h3>
-          <div className="flex items-center gap-1 text-amber-400">{stars}</div>
-        </header>
-
-        {/* Adres / Tarih */}
-        <div className="mb-2 text-xs text-zinc-400">
-          {place.address ? <span>{place.address}</span> : null}
-          {place.address && date ? <span> • </span> : null}
-          {date ? <time>{date}</time> : null}
+      <CardContent className="flex h-full flex-col gap-3 p-4">
+        {/* Title + rating */}
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h3 className="truncate text-lg font-semibold text-zinc-800">
+              {placeName}
+            </h3>
+            {district ? (
+              <p className="truncate text-sm text-zinc-500">{district}</p>
+            ) : null}
+          </div>
+          <div className="shrink-0">
+            <Stars value={rating} />
+          </div>
         </div>
 
-        {/* Yorum metni */}
-        {text ? (
-          <p className="mb-3 line-clamp-4 text-sm text-zinc-200/90">{text}</p>
-        ) : (
-          <p className="mb-3 text-sm italic text-zinc-400">Metin yok</p>
-        )}
-
-        {/* Buton */}
-        {place.url ? (
-          <a
-            href={place.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center rounded-xl border border-zinc-700 px-3 py-1.5 text-sm font-medium text-zinc-200 hover:bg-zinc-800"
-          >
-            Google Maps’te aç
-          </a>
+        {address ? (
+          <p className="line-clamp-1 text-xs text-zinc-400">{address}</p>
         ) : null}
+
+        {reviewTxt ? (
+          <p
+            className="text-[13px] leading-5 text-zinc-600"
+            style={{
+              display: "-webkit-box",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: 3,
+              overflow: "hidden",
+            }}
+          >
+            {reviewTxt}
+          </p>
+        ) : null}
+
+        <div className="mt-auto pt-1">
+          <Button asChild className="w-full">
+            <a href={mapsUrl} target="_blank" rel="noreferrer">
+              Google Maps’te aç
+            </a>
+          </Button>
+        </div>
       </CardContent>
     </Card>
+  );
+}
+
+function Stars({ value = 0 }: { value?: number }) {
+  const clamped = Math.max(0, Math.min(5, Math.floor(value ?? 0)));
+  const full = clamped;
+  const empty = 5 - clamped;
+
+  return (
+    <div className="flex items-center gap-0.5">
+      {Array.from({ length: full }).map((_, i) => (
+        <svg
+          key={`f${i}`}
+          width="16"
+          height="16"
+          viewBox="0 0 20 20"
+          className="text-amber-500"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.19 3.674a1 1 0 00.95.69h3.862c.969 0 1.371 1.24.588 1.81l-3.126 2.272a1 1 0 00-.364 1.118l1.193 3.68c.3.923-.755 1.688-1.54 1.118l-3.152-2.284a1 1 0 00-1.176 0l-3.152 2.284c-.784.57-1.838-.195-1.539-1.118l1.193-3.68a1 1 0 00-.364-1.118L2.36 9.101c-.783-.57-.38-1.81.588-1.81h3.862a1 1 0 00.95-.69l1.19-3.674z"/>
+        </svg>
+      ))}
+      {Array.from({ length: empty }).map((_, i) => (
+        <svg
+          key={`e${i}`}
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          className="text-zinc-300"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+        </svg>
+      ))}
+    </div>
   );
 }
