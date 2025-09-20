@@ -1,6 +1,8 @@
 "use client";
 
 import Image from "next/image";
+import { useState, useRef } from "react";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -50,6 +52,16 @@ type Props = {
 };
 
 export default function ReviewCard(props: Props) {
+    const [open, setOpen] = useState(false);
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function handleMouseEnter() {
+    hoverTimer.current = setTimeout(() => setOpen(true), 500); // 500ms bekle
+  }
+  function handleMouseLeave() {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+  }
+
   const r = props.review;
 
   const pick = <T,>(...vals: (T | null | undefined | "")[]) =>
@@ -92,7 +104,14 @@ export default function ReviewCard(props: Props) {
     pick(r?.place?.url, r?.maps_url, r?.mapsUrl, r?.url, props.mapsUrl) ?? "#";
 
   return (
+    <>
     <Card
+      onClick={() => setOpen(true)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && setOpen(true)}
       className={cn(
         "h-full overflow-hidden rounded-2xl border border-zinc-200/60 bg-white shadow-sm transition-all hover:-translate-y-[2px] hover:shadow-md",
         props.className
@@ -158,6 +177,64 @@ export default function ReviewCard(props: Props) {
         </div>
       </CardContent>
     </Card>
+
+{open && (
+  <div
+    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+    onClick={() => setOpen(false)}
+    onKeyDown={(e) => e.key === "Escape" && setOpen(false)}
+  >
+    <div
+      className="mx-4 w-full max-w-2xl rounded-2xl bg-white shadow-xl outline-none transition-all"
+      style={{ transform: "scale(0.98)", opacity: 0, animation: "pop .16s ease-out forwards" }}
+      onClick={(e) => e.stopPropagation()}
+    >
+      {/* header görsel */}
+      <div className="p-3">
+        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-zinc-100">
+          {photoUrl ? (
+            <Image src={photoUrl} alt={placeName} fill className="object-cover" />
+          ) : (
+            <div className="absolute inset-0 grid place-items-center text-zinc-400">Fotoğraf yok</div>
+          )}
+        </div>
+      </div>
+
+      {/* içerik */}
+      <div className="px-5 pb-5">
+        <div className="mb-2 flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <h3 className="truncate text-xl font-semibold text-zinc-800">{placeName}</h3>
+            {address ? <p className="truncate text-sm text-zinc-500">{address}</p> : null}
+          </div>
+          <div className="shrink-0"><Stars value={rating} /></div>
+        </div>
+
+        {reviewTxt ? (
+          <p className="whitespace-pre-line text-[15px] leading-6 text-zinc-700">{reviewTxt}</p>
+        ) : null}
+
+        <div className="mt-5 flex gap-3">
+          <Button asChild>
+            <a href={mapsUrl} target="_blank" rel="noreferrer">Google Maps’te aç</a>
+          </Button>
+          <Button variant="ghost" onClick={() => setOpen(false)}>Kapat</Button>
+        </div>
+      </div>
+    </div>
+
+    {/* küçük pop animasyonu */}
+    <style jsx>{`
+      @keyframes pop {
+        to { transform: scale(1); opacity: 1; }
+      }
+    `}</style>
+  </div>
+    )}
+
+    </>
+
+
   );
 }
 
