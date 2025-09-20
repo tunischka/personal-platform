@@ -161,10 +161,10 @@ export default function ReviewCard(props: Props) {
           style={{ transform: "scale(0.98)", opacity: 0, animation: "pop .16s ease-out forwards" }}
           onClick={(e) => e.stopPropagation()}
               >
-
-            {/* Görsel (sticky) */}
-            <div className="p-3 sticky top-0 z-10 bg-white">
-              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-zinc-100">
+                
+            {/* Görsel */}
+            <div className="p-3">
+              <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl bg-zinc-100">
                 {photoUrl ? (
                   <Image src={photoUrl ?? ""} alt={placeName} fill className="object-cover" />
                 ) : (
@@ -172,6 +172,7 @@ export default function ReviewCard(props: Props) {
                 )}
               </div>
             </div>
+
 
             {/* İçerik */}
             <div className="px-5 pb-5">
