@@ -5,49 +5,36 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-/** Esnek tip: API/snake_case/camelCase farkını tolere eder */
+/** JSON/SerpAPI varyasyonlarını tolere eden gevşek tip */
 type ReviewAny = Partial<{
-  place_id: string;
-
-  // isim
+  id: string;
+  rating: number;
+  text: string;
+  date: string;
+  images: string[];
+  photo_url: string;
+  photoUrl: string;
+  image_url: string;
+  photo: string;
+  place: {
+    title?: string;
+    name?: string;
+    address?: string;
+    url?: string;
+  };
+  // eski alan isimleri için fallback
   name: string;
   title: string;
   place_name: string;
-
-  // bölge
-  district: string;
-  neighborhood: string;
-  area: string;
-
-  // puan
-  rating: number;
-  score: number;
-
-  // görsel
-  photo_url: string;
-  photoUrl: string;
-  photo: string;
-  image_url: string;
-
-  // adres
   address: string;
   formatted_address: string;
-  vicinity: string;
-
-  // metin
-  text: string;
-  review: string;
-  content: string;
-
-  // link
+  url: string;
   maps_url: string;
   mapsUrl: string;
-  url: string;
-  link: string;
 }>;
 
 type Props = {
-  /** Eski kullanım: doğrudan review objesi */
+  /** Eski kullanım: <ReviewCard review={r} /> */
   review?: ReviewAny;
 
   /** Alternatif kullanım: alan alan */
@@ -68,34 +55,41 @@ export default function ReviewCard(props: Props) {
   const pick = <T,>(...vals: (T | null | undefined | "")[]) =>
     vals.find((v) => v !== undefined && v !== null && v !== "") as T | undefined;
 
-  const placeName = pick(
-    r?.name,
-    r?.title,
-    r?.place_name,
-    props.placeName
-  ) ?? "";
+  // --- normalize ---
+  const placeName =
+    pick(
+      r?.place?.title,
+      r?.place?.name,
+      r?.name,
+      r?.title,
+      r?.place_name,
+      props.placeName
+    ) ?? "";
 
-  const district = pick(
-    r?.district,
-    r?.neighborhood,
-    r?.area,
-    props.district
-  ) ?? "";
-
-  const rating = Number(pick(r?.rating, r?.score, props.rating) ?? 0);
+  const rating = Number(pick(r?.rating, props.rating) ?? 0);
 
   const photoUrl =
-    pick(r?.photo_url, r?.photoUrl, r?.photo, r?.image_url, props.photoUrl) ??
-    null;
+    pick(
+      r?.images?.[0],          // << JSON’daki gerçek alan
+      r?.photo_url,
+      r?.photoUrl,
+      r?.image_url,
+      r?.photo,
+      props.photoUrl
+    ) ?? null;
 
   const address =
-    pick(r?.address, r?.formatted_address, r?.vicinity, props.address) ?? "";
+    pick(
+      r?.place?.address,       // << JSON’daki gerçek alan
+      r?.address,
+      r?.formatted_address,
+      props.address
+    ) ?? "";
 
-  const reviewTxt =
-    pick(r?.text, r?.review, r?.content, props.reviewText) ?? "";
+  const reviewTxt = pick(r?.text, props.reviewText) ?? "";
 
   const mapsUrl =
-    pick(r?.maps_url, r?.mapsUrl, r?.url, r?.link, props.mapsUrl) ?? "#";
+    pick(r?.place?.url, r?.maps_url, r?.mapsUrl, r?.url, props.mapsUrl) ?? "#";
 
   return (
     <Card
@@ -129,18 +123,14 @@ export default function ReviewCard(props: Props) {
             <h3 className="truncate text-lg font-semibold text-zinc-800">
               {placeName}
             </h3>
-            {district ? (
-              <p className="truncate text-sm text-zinc-500">{district}</p>
+            {address ? (
+              <p className="truncate text-xs text-zinc-500">{address}</p>
             ) : null}
           </div>
           <div className="shrink-0">
             <Stars value={rating} />
           </div>
         </div>
-
-        {address ? (
-          <p className="line-clamp-1 text-xs text-zinc-400">{address}</p>
-        ) : null}
 
         {reviewTxt ? (
           <p
