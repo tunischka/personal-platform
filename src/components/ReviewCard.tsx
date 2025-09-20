@@ -156,12 +156,12 @@ export default function ReviewCard(props: Props) {
           aria-modal="true"
           role="dialog"
         >
-          <div
-            className="mx-4 w-full max-w-3xl rounded-2xl bg-white shadow-xl outline-none transition-all
-                       max-h-[85vh] overflow-y-auto"
-            style={{ transform: "scale(0.98)", opacity: 0, animation: "pop .16s ease-out forwards" }}
-            onClick={(e) => e.stopPropagation()}
-          >
+            <div
+          className="mx-4 w-full max-w-3xl rounded-2xl bg-white shadow-xl outline-none transition-all max-h-[85vh] overflow-y-auto"
+          style={{ transform: "scale(0.98)", opacity: 0, animation: "pop .16s ease-out forwards" }}
+          onClick={(e) => e.stopPropagation()}
+              >
+
             {/* Görsel (sticky) */}
             <div className="p-3 sticky top-0 z-10 bg-white">
               <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-zinc-100">
