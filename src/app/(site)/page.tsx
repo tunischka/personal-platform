@@ -3,7 +3,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Bubblegum_Sans } from "next/font/google";
-import ASCIIText from "@/components/blocks/ASCIIText.js";
+import ASCIIText from "@/components/ASCIIText";
+
 
 const bubblegum = Bubblegum_Sans({ weight: "400", subsets: ["latin"] });
 
@@ -70,16 +71,12 @@ export default function Home() {
       {/* kabarcık katmanı */}
       <div ref={layerRef} className="bubble-layer" aria-hidden="true" />
       {/* başlık */}
-      <div className="relative w-full h-[300px] flex items-center justify-center">
-      <ASCIIText
+     <ASCIIText
         text="Tuna"
-        asciiFontSize={7}
-        textFontSize={200}
-        textColor="#fdf9f3"
-        planeBaseHeight={8}
         enableWaves={true}
+        asciiFontSize={8}
       />
-    </div>
+
 
     </section>
   );

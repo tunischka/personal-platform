@@ -1,5 +1,3 @@
-// Component ported and enhanced from https://codepen.io/JuanFuentes/pen/eYEeoyE
-
 import { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 
@@ -44,14 +42,38 @@ void main() {
 }
 `;
 
-Math.map = function (n, start, stop, start2, stop2) {
+function map(n: number, start: number, stop: number, start2: number, stop2: number) {
   return ((n - start) / (stop - start)) * (stop2 - start2) + start2;
-};
+}
 
 const PX_RATIO = typeof window !== 'undefined' ? window.devicePixelRatio : 1;
 
+interface AsciiFilterOptions {
+  fontSize?: number;
+  fontFamily?: string;
+  charset?: string;
+  invert?: boolean;
+}
+
 class AsciiFilter {
-  constructor(renderer, { fontSize, fontFamily, charset, invert } = {}) {
+  renderer: THREE.WebGLRenderer;
+  domElement: HTMLDivElement;
+  pre: HTMLPreElement;
+  canvas: HTMLCanvasElement;
+  context: CanvasRenderingContext2D | null;
+  deg: number;
+  invert: boolean;
+  fontSize: number;
+  fontFamily: string;
+  charset: string;
+  width: number = 0;
+  height: number = 0;
+  center: { x: number; y: number } = { x: 0, y: 0 };
+  mouse: { x: number; y: number } = { x: 0, y: 0 };
+  cols: number = 0;
+  rows: number = 0;
+
+  constructor(renderer: THREE.WebGLRenderer, { fontSize, fontFamily, charset, invert }: AsciiFilterOptions = {}) {
     this.renderer = renderer;
     this.domElement = document.createElement('div');
     this.domElement.style.position = 'absolute';
@@ -73,16 +95,16 @@ class AsciiFilter {
     this.fontFamily = fontFamily ?? "'Courier New', monospace";
     this.charset = charset ?? ' .\'`^",:;Il!i~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$';
 
-    this.context.webkitImageSmoothingEnabled = false;
-    this.context.mozImageSmoothingEnabled = false;
-    this.context.msImageSmoothingEnabled = false;
-    this.context.imageSmoothingEnabled = false;
+    if (this.context) {
+      this.context.imageSmoothingEnabled = false;
+      this.context.imageSmoothingEnabled = false;
+    }
 
     this.onMouseMove = this.onMouseMove.bind(this);
     document.addEventListener('mousemove', this.onMouseMove);
   }
 
-  setSize(width, height) {
+  setSize(width: number, height: number) {
     this.width = width;
     this.height = height;
     this.renderer.setSize(width, height);
@@ -93,43 +115,47 @@ class AsciiFilter {
   }
 
   reset() {
-    this.context.font = `${this.fontSize}px ${this.fontFamily}`;
-    const charWidth = this.context.measureText('A').width;
+    if (this.context) {
+      this.context.font = `${this.fontSize}px ${this.fontFamily}`;
+      const charWidth = this.context.measureText('A').width;
 
-    this.cols = Math.floor(this.width / (this.fontSize * (charWidth / this.fontSize)));
-    this.rows = Math.floor(this.height / this.fontSize);
+      this.cols = Math.floor(this.width / (this.fontSize * (charWidth / this.fontSize)));
+      this.rows = Math.floor(this.height / this.fontSize);
 
-    this.canvas.width = this.cols;
-    this.canvas.height = this.rows;
-    this.pre.style.fontFamily = this.fontFamily;
-    this.pre.style.fontSize = `${this.fontSize}px`;
-    this.pre.style.margin = '0';
-    this.pre.style.padding = '0';
-    this.pre.style.lineHeight = '1em';
-    this.pre.style.position = 'absolute';
-    this.pre.style.left = '50%';
-    this.pre.style.top = '50%';
-    this.pre.style.transform = 'translate(-50%, -50%)';
-    this.pre.style.zIndex = '9';
-    this.pre.style.backgroundAttachment = 'fixed';
-    this.pre.style.mixBlendMode = 'difference';
+      this.canvas.width = this.cols;
+      this.canvas.height = this.rows;
+      this.pre.style.fontFamily = this.fontFamily;
+      this.pre.style.fontSize = `${this.fontSize}px`;
+      this.pre.style.margin = '0';
+      this.pre.style.padding = '0';
+      this.pre.style.lineHeight = '1em';
+      this.pre.style.position = 'absolute';
+      this.pre.style.left = '50%';
+      this.pre.style.top = '50%';
+      this.pre.style.transform = 'translate(-50%, -50%)';
+      this.pre.style.zIndex = '9';
+      this.pre.style.backgroundAttachment = 'fixed';
+      this.pre.style.mixBlendMode = 'difference';
+    }
   }
 
-  render(scene, camera) {
+  render(scene: THREE.Scene, camera: THREE.Camera) {
     this.renderer.render(scene, camera);
 
     const w = this.canvas.width;
     const h = this.canvas.height;
-    this.context.clearRect(0, 0, w, h);
-    if (this.context && w && h) {
-      this.context.drawImage(this.renderer.domElement, 0, 0, w, h);
-    }
+    if (this.context) {
+      this.context.clearRect(0, 0, w, h);
+      if (this.context && w && h) {
+        this.context.drawImage(this.renderer.domElement, 0, 0, w, h);
+      }
 
-    this.asciify(this.context, w, h);
-    this.hue();
+      this.asciify(this.context, w, h);
+      this.hue();
+    }
   }
 
-  onMouseMove(e) {
+  onMouseMove(e: MouseEvent) {
     this.mouse = { x: e.clientX * PX_RATIO, y: e.clientY * PX_RATIO };
   }
 
@@ -147,7 +173,7 @@ class AsciiFilter {
     this.domElement.style.filter = `hue-rotate(${this.deg.toFixed(1)}deg)`;
   }
 
-  asciify(ctx, w, h) {
+  asciify(ctx: CanvasRenderingContext2D, w: number, h: number) {
     if (w && h) {
       const imgData = ctx.getImageData(0, 0, w, h).data;
       let str = '';
@@ -177,8 +203,22 @@ class AsciiFilter {
   }
 }
 
+interface CanvasTxtOptions {
+  fontSize?: number;
+  fontFamily?: string;
+  color?: string;
+}
+
 class CanvasTxt {
-  constructor(txt, { fontSize = 200, fontFamily = 'Arial', color = '#fdf9f3' } = {}) {
+  canvas: HTMLCanvasElement;
+  context: CanvasRenderingContext2D | null;
+  txt: string;
+  fontSize: number;
+  fontFamily: string;
+  color: string;
+  font: string;
+
+  constructor(txt: string, { fontSize = 200, fontFamily = 'Arial', color = '#fdf9f3' }: CanvasTxtOptions = {}) {
     this.canvas = document.createElement('canvas');
     this.context = this.canvas.getContext('2d');
     this.txt = txt;
@@ -190,25 +230,29 @@ class CanvasTxt {
   }
 
   resize() {
-    this.context.font = this.font;
-    const metrics = this.context.measureText(this.txt);
+    if (this.context) {
+      this.context.font = this.font;
+      const metrics = this.context.measureText(this.txt);
 
-    const textWidth = Math.ceil(metrics.width) + 20;
-    const textHeight = Math.ceil(metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent) + 20;
+      const textWidth = Math.ceil(metrics.width) + 20;
+      const textHeight = Math.ceil(metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent) + 20;
 
-    this.canvas.width = textWidth;
-    this.canvas.height = textHeight;
+      this.canvas.width = textWidth;
+      this.canvas.height = textHeight;
+    }
   }
 
   render() {
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.context.fillStyle = this.color;
-    this.context.font = this.font;
+    if (this.context) {
+      this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+      this.context.fillStyle = this.color;
+      this.context.font = this.font;
 
-    const metrics = this.context.measureText(this.txt);
-    const yPos = 10 + metrics.actualBoundingBoxAscent;
+      const metrics = this.context.measureText(this.txt);
+      const yPos = 10 + metrics.actualBoundingBoxAscent;
 
-    this.context.fillText(this.txt, 10, yPos);
+      this.context.fillText(this.txt, 10, yPos);
+    }
   }
 
   get width() {
@@ -224,12 +268,43 @@ class CanvasTxt {
   }
 }
 
+interface CanvAsciiOptions {
+  text: string;
+  asciiFontSize: number;
+  textFontSize: number;
+  textColor: string;
+  planeBaseHeight: number;
+  enableWaves: boolean;
+}
+
 class CanvAscii {
+  textString: string;
+  asciiFontSize: number;
+  textFontSize: number;
+  textColor: string;
+  planeBaseHeight: number;
+  container: HTMLElement;
+  width: number;
+  height: number;
+  enableWaves: boolean;
+  camera: THREE.PerspectiveCamera;
+  scene: THREE.Scene;
+  mouse: { x: number; y: number };
+  textCanvas!: CanvasTxt;
+  texture!: THREE.CanvasTexture;
+  geometry!: THREE.PlaneGeometry;
+  material!: THREE.ShaderMaterial;
+  mesh!: THREE.Mesh;
+  renderer!: THREE.WebGLRenderer;
+  filter!: AsciiFilter;
+  center!: { x: number; y: number };
+  animationFrameId: number = 0;
+
   constructor(
-    { text, asciiFontSize, textFontSize, textColor, planeBaseHeight, enableWaves },
-    containerElem,
-    width,
-    height
+    { text, asciiFontSize, textFontSize, textColor, planeBaseHeight, enableWaves }: CanvAsciiOptions,
+    containerElem: HTMLElement,
+    width: number,
+    height: number
   ) {
     this.textString = text;
     this.asciiFontSize = asciiFontSize;
@@ -305,7 +380,7 @@ class CanvAscii {
     this.container.addEventListener('touchmove', this.onMouseMove);
   }
 
-  setSize(w, h) {
+  setSize(w: number, h: number) {
     this.width = w;
     this.height = h;
 
@@ -321,8 +396,8 @@ class CanvAscii {
     this.animate();
   }
 
-  onMouseMove(evt) {
-    const e = evt.touches ? evt.touches[0] : evt;
+  onMouseMove(evt: MouseEvent | TouchEvent) {
+    const e = (evt as TouchEvent).touches ? (evt as TouchEvent).touches[0] : (evt as MouseEvent);
     const bounds = this.container.getBoundingClientRect();
     const x = e.clientX - bounds.left;
     const y = e.clientY - bounds.top;
@@ -343,32 +418,34 @@ class CanvAscii {
     this.textCanvas.render();
     this.texture.needsUpdate = true;
 
-    this.mesh.material.uniforms.uTime.value = Math.sin(time);
+    (this.mesh.material as THREE.ShaderMaterial).uniforms.uTime.value = Math.sin(time);
 
     this.updateRotation();
     this.filter.render(this.scene, this.camera);
   }
 
   updateRotation() {
-    const x = Math.map(this.mouse.y, 0, this.height, 0.5, -0.5);
-    const y = Math.map(this.mouse.x, 0, this.width, -0.5, 0.5);
+    const x = map(this.mouse.y, 0, this.height, 0.5, -0.5);
+    const y = map(this.mouse.x, 0, this.width, -0.5, 0.5);
 
     this.mesh.rotation.x += (x - this.mesh.rotation.x) * 0.05;
     this.mesh.rotation.y += (y - this.mesh.rotation.y) * 0.05;
   }
 
   clear() {
-    this.scene.traverse(obj => {
-      if (obj.isMesh && typeof obj.material === 'object' && obj.material !== null) {
-        Object.keys(obj.material).forEach(key => {
-          const matProp = obj.material[key];
-          if (matProp !== null && typeof matProp === 'object' && typeof matProp.dispose === 'function') {
+    this.scene.traverse(object => {
+      const obj = object as unknown as THREE.Mesh;
+      if (!obj.isMesh) return;
+      [obj.material].flat().forEach(material => {
+        material.dispose();
+        Object.keys(material).forEach(key => {
+          const matProp = material[key as keyof typeof material];
+          if (matProp && typeof matProp === 'object' && 'dispose' in matProp && typeof matProp.dispose === 'function') {
             matProp.dispose();
           }
         });
-        obj.material.dispose();
-        obj.geometry.dispose();
-      }
+      });
+      obj.geometry.dispose();
     });
     this.scene.clear();
   }
@@ -384,6 +461,15 @@ class CanvAscii {
   }
 }
 
+interface ASCIITextProps {
+  text?: string;
+  asciiFontSize?: number;
+  textFontSize?: number;
+  textColor?: string;
+  planeBaseHeight?: number;
+  enableWaves?: boolean;
+}
+
 export default function ASCIIText({
   text = 'David!',
   asciiFontSize = 8,
@@ -391,9 +477,9 @@ export default function ASCIIText({
   textColor = '#fdf9f3',
   planeBaseHeight = 8,
   enableWaves = true
-}) {
-  const containerRef = useRef(null);
-  const asciiRef = useRef(null);
+}: ASCIITextProps) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const asciiRef = useRef<CanvAscii | null>(null);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -407,8 +493,15 @@ export default function ASCIIText({
             const { width: w, height: h } = entry.boundingClientRect;
 
             asciiRef.current = new CanvAscii(
-              { text, asciiFontSize, textFontSize, textColor, planeBaseHeight, enableWaves },
-              containerRef.current,
+              {
+                text,
+                asciiFontSize,
+                textFontSize,
+                textColor,
+                planeBaseHeight,
+                enableWaves
+              },
+              containerRef.current!,
               w,
               h
             );
@@ -431,7 +524,14 @@ export default function ASCIIText({
     }
 
     asciiRef.current = new CanvAscii(
-      { text, asciiFontSize, textFontSize, textColor, planeBaseHeight, enableWaves },
+      {
+        text,
+        asciiFontSize,
+        textFontSize,
+        textColor,
+        planeBaseHeight,
+        enableWaves
+      },
       containerRef.current,
       width,
       height
@@ -467,6 +567,11 @@ export default function ASCIIText({
     >
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&display=swap');
+
+        body {
+          margin: 0;
+          padding: 0;
+        }
 
         .ascii-text-container canvas {
           position: absolute;
