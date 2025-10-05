@@ -3,34 +3,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Bubblegum_Sans } from "next/font/google";
+import ASCIIText from "@/components/blocks/ASCIIText.jsx";
+
 const bubblegum = Bubblegum_Sans({ weight: "400", subsets: ["latin"] });
 
 export default function Home() {
-  // TYPEWRITER
-  const text = "Tuna";
-  const [shown, setShown] = useState("");
 
-  useEffect(() => {
-    let i = 0;
-    let cancelled = false;
-
-    function tick() {
-      if (cancelled) return;
-      setShown(text.slice(0, i));
-      i++;
-      if (i <= text.length) {
-        setTimeout(tick, 200);
-      } else {
-        setTimeout(() => {
-          i = 0;
-          tick();
-        }, 6000);
-      }
-    }
-
-    tick();
-    return () => { cancelled = true; };
-  }, []);
 
   // BUBBLE / GEO SHAPES (renk akışı YOK – B yolu)
   const layerRef = useRef<HTMLDivElement | null>(null);
@@ -92,9 +70,17 @@ export default function Home() {
       {/* kabarcık katmanı */}
       <div ref={layerRef} className="bubble-layer" aria-hidden="true" />
       {/* başlık */}
-      <h1 id="typewriter" className={`${bubblegum.className} typewriter text-center`}>
-        {shown}
-      </h1>
+      <div className="relative w-full h-[300px] flex items-center justify-center">
+      <ASCIIText
+        text="Tuna"
+        asciiFontSize={7}
+        textFontSize={200}
+        textColor="#fdf9f3"
+        planeBaseHeight={8}
+        enableWaves={true}
+      />
+    </div>
+
     </section>
   );
 }
