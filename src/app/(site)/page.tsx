@@ -1,17 +1,13 @@
-// src/app/(site)/page.tsx
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Bubblegum_Sans } from "next/font/google";
-import ASCIIText from "@/components/ASCIIText";
-
+import GradientText from "@/components/GradientText";
+import TextType from "@/components/TextType";
 
 const bubblegum = Bubblegum_Sans({ weight: "400", subsets: ["latin"] });
 
 export default function Home() {
-
-
-  // BUBBLE / GEO SHAPES (renk akışı YOK – B yolu)
   const layerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -20,10 +16,8 @@ export default function Home() {
 
     const isMobile = matchMedia("(max-width: 576px)").matches;
     const rnd = (a: number, b: number) => Math.random() * (b - a) + a;
-
     const created: HTMLElement[] = [];
 
-    // bubbles
     const BUBBLE_COUNT = isMobile ? 14 : 26;
     for (let i = 0; i < BUBBLE_COUNT; i++) {
       const b = document.createElement("span");
@@ -41,14 +35,12 @@ export default function Home() {
       created.push(b);
     }
 
-    // shapes
     const SHAPE_COUNT = isMobile ? 8 : 14;
     const TYPES = ["circle", "square", "triangle"];
     for (let i = 0; i < SHAPE_COUNT; i++) {
       const s = document.createElement("span");
       s.className = `geo ${TYPES[Math.floor(Math.random() * TYPES.length)]}`;
-
-      const hue = Math.round(rnd(0, 360)); // tek kez üret
+      const hue = Math.round(rnd(0, 360));
       s.style.setProperty("--size", `${Math.round(rnd(24, 52))}px`);
       s.style.setProperty("--x", `${rnd(0, 100).toFixed(2)}%`);
       s.style.setProperty("--dur", `${rnd(14, 22).toFixed(2)}s`);
@@ -56,7 +48,6 @@ export default function Home() {
       s.style.setProperty("--op", `${rnd(0.25, 0.5).toFixed(2)}`);
       s.style.setProperty("--rot", `${Math.round(rnd(0, 180))}deg`);
       s.style.setProperty("--hue", `${hue}deg`);
-
       layer.appendChild(s);
       created.push(s as HTMLElement);
     }
@@ -67,17 +58,26 @@ export default function Home() {
   }, []);
 
   return (
-    <section className="hero relative h-[100vh] grid place-items-center">
+    <section className="hero relative h-[100vh] grid place-items-center overflow-hidden">
       {/* kabarcık katmanı */}
-      <div ref={layerRef} className="bubble-layer" aria-hidden="true" />
-      {/* başlık */}
-     <ASCIIText
-        text="Tuna"
-        enableWaves={true}
-        asciiFontSize={8}
-      />
+      <div ref={layerRef} className="bubble-layer absolute inset-0" aria-hidden="true" />
 
-
+      {/* yazı */}
+      <div className="relative z-10 text-center">
+        <GradientText
+          colors={["#40ffaa", "#4079ff", "#40ffaa", "#4079ff", "#40ffaa"]}
+          animationSpeed={3}
+          showBorder={false}
+          className={`text-8xl md:text-9xl font-extrabold ${bubblegum.className}`}
+        >
+          <TextType
+            text={["Tuna","ttunatartare", ]}
+            typingSpeed={100}
+            deletingSpeed={50}
+            loop
+          />
+        </GradientText>
+      </div>
     </section>
   );
 }

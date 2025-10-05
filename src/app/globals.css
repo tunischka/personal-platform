@@ -267,3 +267,23 @@
   100%{transform:translateX(calc(-50% - 12px)) translateY(-120vh) scale(1.1) rotate(calc(var(--rot,0deg) + 180deg))}
 }
 @keyframes bubble-spin{ 0%{--hue:0deg} 100%{--hue:360deg} }
+
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient {
+  background-size: 300%;
+  animation: gradientFlow 6s ease infinite;
+}
+
+
+
