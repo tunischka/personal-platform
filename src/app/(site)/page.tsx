@@ -3,7 +3,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Bubblegum_Sans } from "next/font/google";
-import ASCIIText from "@/components/blocks/ASCIIText.jsx";
+import ASCIIText from "@/components/blocks/ASCIIText.js";
 
 const bubblegum = Bubblegum_Sans({ weight: "400", subsets: ["latin"] });
 
