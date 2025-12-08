@@ -20,7 +20,7 @@ const navItems = [
   { name: "Home", link: "/" },
   { name: "Projects", link: "/projects" },
   { name: "CV", link: "/cv" },
-  { name: "ttunatartare", link: "/ttunatartare" },
+  { name: "ttunatartare 🍣", link: "/ttunatartare" },
 ];
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {

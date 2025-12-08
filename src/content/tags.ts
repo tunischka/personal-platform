@@ -4,7 +4,8 @@ export type TagId =
 | "malware"
 | "ctf"
 | "web-exploitation"
-| "priv-escalation";
+| "priv-escalation"
+| "windows-exploitation";
 
 export interface TagDef {
 id: TagId;
@@ -17,6 +18,7 @@ export const TAGS: TagDef[] = [
 { id: "ctf", label: "CTF" },
 { id: "web-exploitation", label: "Web-Exploitation" },
 { id: "priv-escalation", label: "Privilege-Escalation" },
+{ id: "windows-exploitation", label: "Windows-Exploitation" },
 ];
 
 // Golden Angle renk dağıtımı

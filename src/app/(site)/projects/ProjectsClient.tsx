@@ -48,6 +48,15 @@ const projects: Project[] = [
     date: "2024-11-12",
     tags: ["ctf", "priv-escalation"],
   },
+  {
+    href: "/projects/blue",
+    title: "Blue – TryHackMe CTF Walkthrough",
+    text: "This write-up covers my walkthrough of the Wonderland CTF room on TryHackMe, aimed at building foundational skills in privilege escalation.",
+    imgSrc: "/images/blue-cover.png",
+    imgAlt: " Blue",
+    date: "2025-12-08",
+    tags: ["ctf", "windows-exploitation"],
+  },
 ];
 
 // 3) Kart

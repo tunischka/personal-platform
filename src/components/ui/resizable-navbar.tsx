@@ -237,12 +237,14 @@ export const NavbarLogo = () => {
       className="relative z-20 mr-4 flex items-center space-x-2 px-2 py-1 text-sm font-normal text-black"
     >
       <img
-        src="https://assets.aceternity.com/logo-dark.png"
-        alt="logo"
-        width={30}
-        height={30}
+        src="/logo.jpeg"
+        alt="Tuna Gökgöz Logo"
+        width={40}
+        height={40}
+        className="rounded-full object-cover bg-transparent relative top-[2px]"
       />
-      <span className="font-medium text-black dark:text-white">Startup</span>
+
+      <span className="font-medium text-black dark:text-white">Tuna Gökgöz</span>
     </a>
   );
 };

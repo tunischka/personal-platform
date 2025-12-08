@@ -29,7 +29,7 @@ export function NavbarDemo() {
         {/* Desktop */}
         <NavBody>
       
-            <Link href="/">🍣</Link>
+          <Link href="/">🍣</Link>
        
           <NavItems items={navItems} />
           <div className="flex items-center gap-4">
