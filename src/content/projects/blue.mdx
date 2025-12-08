@@ -23,7 +23,6 @@ The scan confirmed that the target was VULNERABLE to MS17-010 (CVE-2017-0143), p
 
 ### 2️⃣ Metasploit – Selecting the Exploit Module
 
-![Metasploit search](/images/replace_blue_msf_search.png)
 
 The next logical step is to utilize the Metasploit Framework, the primary tool for leveraging known vulnerabilities. We immediately search for and select the dedicated EternalBlue exploit module.
 
@@ -35,7 +34,6 @@ use exploit/windows/smb/ms17_010_eternalblue
 
 ### 3️⃣ Metasploit – Setting RHOSTS and Payload
 
-![Metasploit options](/images/replace_blue_msf_options.png)
 
 Before launching the attack, we must configure the exploit options. Running show options reveals the required parameters. The most critical setting is the target's IP address, set via RHOSTS. We also confirm that the default payload (usually a Meterpreter session) is correctly configured for the Windows architecture.
 
