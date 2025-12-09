@@ -52,7 +52,7 @@ const projects: Project[] = [
     href: "/projects/blue",
     title: "Blue – TryHackMe CTF Walkthrough",
     text: "This write-up covers my walkthrough of the Wonderland CTF room on TryHackMe, aimed at building foundational skills in privilege escalation.",
-    imgSrc: "/images/blue-cover.jpeg",
+    imgSrc: "/images/blue_cover.jpeg",
     imgAlt: " Blue",
     date: "2025-12-08",
     tags: ["ctf", "windows-exploitation"],
