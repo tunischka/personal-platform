@@ -36,15 +36,7 @@ export default function ProjectCard({
             </div>
             <div className="flex-1 flex flex-col h-full">
                 <div className="mb-auto">
-                    <div className="flex items-center justify-between mb-1">
-                        <span className="text-xs font-medium text-blue-500 dark:text-blue-400">
-                            {new Date(date).toLocaleDateString("en-US", {
-                                month: "short",
-                                year: "numeric",
-                            })}
-                        </span>
-                    </div>
-                    <h3 className="text-lg font-bold mb-2 line-clamp-2 leading-tight">
+                    <h3 className="text-lg font-bold mb-2 line-clamp-2 leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                         {title}
                     </h3>
                     <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">
@@ -52,16 +44,19 @@ export default function ProjectCard({
                     </p>
                 </div>
 
-                <div className="mt-2">
-                    {!!tags?.length && (
-                        <div className="flex flex-wrap gap-1 mb-3">
-                            {tags.slice(0, 3).map((id) => (
+                <div className="mt-4 flex items-center justify-between">
+                    {!!tags?.length ? (
+                        <div className="flex flex-wrap gap-1">
+                            {tags.slice(0, 2).map((id) => (
                                 <TagPill key={id} id={id} />
                             ))}
                         </div>
+                    ) : (
+                        <div />
                     )}
-                    <span className="text-sm font-semibold text-blue-600 dark:text-blue-400 flex items-center gap-1 group-hover:gap-2 transition-all">
-                        Read more <span aria-hidden="true">&rarr;</span>
+
+                    <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs font-bold transition-all duration-300 group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-lg group-hover:scale-105">
+                        Read more <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">&rarr;</span>
                     </span>
                 </div>
             </div>
@@ -69,7 +64,7 @@ export default function ProjectCard({
     );
 
     const baseClasses = cn(
-        "rounded-3xl border border-gray-200/80 bg-white/70 dark:bg-white/5 shadow-sm p-6 transition h-full",
+        "rounded-3xl border border-gray-200/80 bg-white/70 dark:bg-white/5 shadow-sm p-6 transition h-full group",
         className
     );
 
