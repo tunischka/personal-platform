@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { Bubblegum_Sans } from "next/font/google";
 import GradientText from "@/components/GradientText";
 import TextType from "@/components/TextType";
+import ProjectCarousel from "@/components/ProjectCarousel";
 
 const bubblegum = Bubblegum_Sans({ weight: "400", subsets: ["latin"] });
 
@@ -63,7 +64,7 @@ export default function Home() {
       <div ref={layerRef} className="bubble-layer absolute inset-0" aria-hidden="true" />
 
       {/* yazı */}
-      <div className="relative z-10 text-center">
+      <div className="relative z-10 text-center w-full max-w-6xl mx-auto flex flex-col items-center gap-12">
         <GradientText
           colors={["#40ffaa", "#4079ff", "#40ffaa", "#4079ff", "#40ffaa"]}
           animationSpeed={3}
@@ -71,12 +72,14 @@ export default function Home() {
           className={`text-8xl md:text-9xl font-extrabold ${bubblegum.className}`}
         >
           <TextType
-            text={["Tuna","ttunatartare", ]}
+            text={["Tuna", "ttunatartare"]}
             typingSpeed={100}
             deletingSpeed={50}
             loop
           />
         </GradientText>
+
+        <ProjectCarousel />
       </div>
     </section>
   );

@@ -1,100 +1,11 @@
-// src/app/(site)/projects/ProjectsClient.tsx
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
-import TagPill from "@/components/tags/TagPill";
 import TagFilterBar from "@/components/tags/TagFilterBar";
 import { useTagFilterSort } from "@/hooks/useTagFilterSort";
-import type { TagId } from "@/content/tags";
+import { projects } from "@/data/projects";
+import ProjectCard from "@/components/ProjectCard";
 
-// 1) Net tip
-type Project = {
-  href?: string;
-  title: string;
-  text: string;
-  imgSrc?: string;
-  imgAlt?: string;
-  date: string;     // ISO date
-  tags: TagId[];
-};
-
-// 2) Proje verileri
-const projects: Project[] = [
-  {
-    href: "/projects/angler-exploit-kit",
-    title: "Angler Exploit Kit — PCAP Network Forensics Case Study",
-    text: "PCAP forensics on a multi-stage Angler EK attack chain.",
-    imgSrc: "/images/angler-cover.jpg",
-    imgAlt: "Angler EK",
-    date: "2024-08-18",
-    tags: ["forensics", "malware"],
-  },
-  {
-    href: "/projects/vulnversity",
-    title: "Vulnversity – TryHackMe CTF Walkthrough",
-    text: "This write-up covers my walkthrough of the Vulnversity CTF room on TryHackMe, aimed at building foundational skills in web exploitation.",
-    imgSrc: "/images/vulnversity-cover.jpeg",
-    imgAlt: "Vulnversity",
-    date: "2024-10-03",
-    tags: ["ctf", "web-exploitation"],
-  },
-  {
-    href: "/projects/wonderland",
-    title: "Wonderland – TryHackMe CTF Walkthrough",
-    text: "This write-up covers my walkthrough of the Wonderland CTF room on TryHackMe, aimed at building foundational skills in privilege escalation.",
-    imgSrc: "/images/wonderland_cover.jpeg",
-    imgAlt: "Wonderland",
-    date: "2024-11-12",
-    tags: ["ctf", "priv-escalation"],
-  },
-  {
-    href: "/projects/blue",
-    title: "Blue – TryHackMe CTF Walkthrough",
-    text: "This write-up covers my walkthrough of the Wonderland CTF room on TryHackMe, aimed at building foundational skills in privilege escalation.",
-    imgSrc: "/images/blue_cover.jpeg",
-    imgAlt: " Blue",
-    date: "2025-12-08",
-    tags: ["ctf", "windows-exploitation"],
-  },
-];
-
-// 3) Kart
-function ProjectSlot({ href, title, text, imgSrc, imgAlt, tags }: Project) {
-  const Inner = (
-    <div className="flex items-center gap-6">
-      <div className="relative w-28 h-28 flex-shrink-0 overflow-hidden rounded-xl bg-gray-100 dark:bg-white/10">
-        {imgSrc ? (
-          <Image src={imgSrc} alt={imgAlt || title} fill className="object-cover" />
-        ) : (
-          <div className="w-full h-full grid place-items-center text-sm text-gray-400">(image)</div>
-        )}
-      </div>
-      <div className="flex-1">
-        <h3 className="text-lg font-semibold mb-1">{title}</h3>
-        <p className="text-gray-600 dark:text-gray-300 text-sm mb-2">{text}</p>
-        {!!tags?.length && (
-          <div className="flex flex-wrap gap-1">
-            {tags.map((id) => <TagPill key={id} id={id} />)}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-
-  const baseClasses =
-    "rounded-3xl border border-gray-200/80 bg-white/70 dark:bg-white/5 shadow-sm p-6 transition";
-
-  return href ? (
-    <Link href={href} className={`block hover:shadow-md ${baseClasses}`}>
-      {Inner}
-    </Link>
-  ) : (
-    <div className={baseClasses}>{Inner}</div>
-  );
-}
-
-// 4) Liste + filtre/sort
+// Liste + filtre/sort
 export default function ProjectsClient() {
   const { allTags, activeTag, setActiveTag, sortBy, setSortBy, visible } =
     useTagFilterSort(projects);
@@ -151,9 +62,10 @@ export default function ProjectsClient() {
 
       <div className="space-y-8">
         {visible.map((p) => (
-          <ProjectSlot key={p.title} {...p} />
+          <ProjectCard key={p.title} {...p} />
         ))}
       </div>
     </>
   );
 }
+
