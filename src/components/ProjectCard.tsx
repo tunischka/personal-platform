@@ -55,7 +55,7 @@ export default function ProjectCard({
                         <div />
                     )}
 
-                    <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs font-bold transition-all duration-300 group-hover:bg-blue-600 group-hover:text-white group-hover:shadow-lg group-hover:scale-105">
+                    <span className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 text-xs font-bold transition-all duration-300 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 group-hover:scale-105">
                         Read more <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">&rarr;</span>
                     </span>
                 </div>
