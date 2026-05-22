@@ -47,4 +47,13 @@ export const projects: Project[] = [
         date: "2025-12-08",
         tags: ["ctf", "windows-exploitation"],
     },
+    {
+        href: "/projects/michelangelo-pentest",
+        title: "Michelangelo – Web Application Penetration Test",
+        text: "University penetration testing assignment against a vulnerable car dealership web app. SQL Injection (Critical), Reflected XSS, and Information Disclosure findings with full PoC.",
+        imgSrc: "/images/REPLACE_michelangelo-cover.jpg",
+        imgAlt: "Michelangelo Pentest",
+        date: "2026-01-15",
+        tags: ["web-exploitation"],
+    },
 ];
